@@ -19,7 +19,7 @@ dataset = sqlContext.read.format('csv').options(header='true',schema=finalSchema
 dataset = dataset.withColumn("label", dataset["label"].cast(DoubleType()))
 dataset = dataset.withColumn("id", dataset["id"].cast(IntegerType()))
 training, test = dataset.randomSplit([0.8, 0.2], seed=12345)
-training = training.where(col("text").isNull())
+
 #training = sqlContext.createDataFrame([
 #    (0, "a b c d e sc", 1.0),
 #    (1, "b d", 0.0),
@@ -33,14 +33,8 @@ hashingTF = HashingTF(inputCol=tokenizer.getOutputCol(), outputCol="features")
 lr = LogisticRegression(maxIter=10, regParam=0.001)
 pipeline = Pipeline(stages=[tokenizer, hashingTF, lr])
 
-paramGrid = ParamGridBuilder()\
-    .addGrid(lr.regParam, [0.1, 0.01]) \
-    .addGrid(lr.fitIntercept, [False, True])\
-    .addGrid(lr.elasticNetParam, [0.0, 0.5, 1.0])\
-    .build()
-
 # Fit the pipeline to training documents.
-model = pipeline.fit(training.na.drop(Array("text")))
+model = pipeline.fit(training)
 
 # Prepare test documents, which are unlabeled (id, text) tuples.
 #training = sqlContext.read.format('csv').options(header='false',delimiter='|',schema=schema).load('trainingdata.csv')
