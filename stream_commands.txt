@@ -1,0 +1,24 @@
+start zookeeper : bin/zookeeper-server-start.sh config/zookeeper.properties
+
+start kafka server : bin/kafka-server-start.sh config/server.properties
+
+produce data : ./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+
+consume data : ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+
+submit code : ./spark-submit.cmd  --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.1 sparkstream.py localhost:9092 test
+
+
+For solving memory full errors : 
+
+Since you are running Spark in local mode, setting spark.executor.memory won't have any effect, as you have noticed. The reason for this is that the Worker "lives" within the driver JVM process that you start when you start spark-shell and the default memory used for that is 512M. You can increase that by setting spark.driver.memory to something higher, for example 5g. You can do that by either:
+
+    setting it in the properties file (default is spark-defaults.conf),
+
+    spark.driver.memory              5g
+
+    or by supplying configuration setting at runtime
+
+    $ ./bin/spark-shell --driver-memory 5g
+
+Note that this cannot be achieved by setting it in the application, because it is already too late by then, the process has already started with some amount of memory.
