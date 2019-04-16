@@ -47,7 +47,7 @@ def getData(url, idx=0):
     return(data)
 
 if __name__== "__main__":
-    key = "8ed5e7d3-eace-49b6-a1c3-c960b9e795fa"
+    key = ""
     date1 = datetime.datetime(2015,8,1,12,4,5)
     date2 = datetime.datetime(2015,8,2,12,4,5)
     

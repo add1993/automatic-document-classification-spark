@@ -71,7 +71,7 @@ def connect_kafka_producer():
         return _producer
 
 if __name__== "__main__":
-    key = '7faccc33-5d6a-4300-9e0b-1e5aa723f6e7'
+    key = ''
     fromDate = '2019-01-1'
     toDate = '2019-03-3'
     
