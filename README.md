@@ -10,3 +10,29 @@ After this I uploaded the dataset on databricks and create the pipeline model us
 
 #### Step 3 : Run stream_producer.py to use the extracted model to classify streaming data
 Now we will using the stream_producer.py to create a kafka stream data and use the spark_stream.py file to read the stream and load the created model and generate the prediction on the fly. Please, add the saved model full path in the spark_stream.py file.
+
+#### Commands
+start zookeeper : bin/zookeeper-server-start.sh config/zookeeper.properties <br/><br/>
+
+start kafka server : bin/kafka-server-start.sh config/server.properties<br/><br/>
+
+produce data : ./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test<br/><br/>
+
+consume data : ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning<br/><br/>
+
+submit code : ./spark-submit.cmd  --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.1 sparkstream.py localhost:9092 test<br/><br/>
+
+
+For solving memory full errors : <br/><br/>
+
+Since you are running Spark in local mode, setting spark.executor.memory won't have any effect, as you have noticed. The reason for this is that the Worker "lives" within the driver JVM process that you start when you start spark-shell and the default memory used for that is 512M. You can increase that by setting spark.driver.memory to something higher, for example 5g. You can do that by either:<br/><br/>
+
+    setting it in the properties file (default is spark-defaults.conf),
+
+    spark.driver.memory              5g
+
+    or by supplying configuration setting at runtime
+
+    $ ./bin/spark-shell --driver-memory 5g
+
+Note that this cannot be achieved by setting it in the application, because it is already too late by then, the process has already started with some amount of memory.
